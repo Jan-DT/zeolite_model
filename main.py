@@ -46,21 +46,26 @@ class Reactor:
         """
         while self.time < duration:
             if self.state == Reactor.State.ADSORPTION:
-                self.adsorption_step(self.delta_time)
+                self._adsorption_step(self.delta_time)
             elif self.state == Reactor.State.DESORPTION:
-                self.desorption_step(self.delta_time)
+                self._desorption_step(self.delta_time)
             else:
                 raise Exception("Invalid state")
 
             self.time += self.delta_time
 
-    def adsorption_step(self, dt: float):
+    def _adsorption_step(self, dt: float):
+        """
+        Perform one adsorption step
+        :param dt: delta time in seconds
+        :return:
+        """
         print("adsorption step")
 
-    def desorption_step(self, dt: float):
+    def _desorption_step(self, dt: float):
         print("desorption step")
 
-    def switch_state(self):
+    def _switch_state(self):
         if self.state == Reactor.State.ADSORPTION:
             self.state = Reactor.State.DESORPTION
         elif self.state == Reactor.State.DESORPTION:
@@ -70,11 +75,46 @@ class Reactor:
 
 
 if __name__ == "__main__":
-    while True:
-        reactor = Reactor(delta_time=0.1,
-                          t_ads=T_ADS,
-                          p_ads=P_ADS,
-                          t_des=T_DES,
-                          p_des=P_DES)
+    # while True:
+    #     reactor = Reactor(delta_time=0.1,
+    #                       t_ads=T_ADS,
+    #                       p_ads=P_ADS,
+    #                       t_des=T_DES,
+    #                       p_des=P_DES)
+    #
+    #     reactor.run(duration=100)
 
-        reactor.run(duration=100)
+    def plot_3d(x, y, z_func):
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        # Plot the surface
+        ax.plot_surface(x, y, z_func(x,y))
+
+        ax.set_xlabel("T (K)")
+        ax.set_ylabel("p (Pa)")
+        ax.set_zlabel("q_A (mol/kg)")
+
+        plt.show()
+
+
+    # uit paper: https://www.sciencedirect.com/science/article/abs/pii/S138718111400448X
+    B_A0 = 3.915 * 10 ** 5  # pa^-1
+    Q_MAX = 3.2 # mol/kg (uit zelfde paper)
+    E_ADS = 1.2 * 10 ** 3  # J/mol (ONGEBASEERD, VOLLEDIG WILLEKEURIG GEKOZEN)
+    R = 8.314  # J/mol K
+
+
+    # afhankelijk van reactor capaciteit
+    T_values = np.linspace(273.15 + 200, 273.15 + 350, 100)
+    # in paper: https://pubs.acs.org/doi/10.1021/acs.jpcc.6b09224
+    # wordt een partial pressure tussen 0 en 2kPa genoemd
+    p_values = np.linspace(100, 2000, 100)
+
+    def z_func(T_ADS, pA):
+        _b_A = b_A(B_A0, E_ADS, R, T_ADS)
+        return q_A_langmuir(Q_MAX, _b_A, pA)
+
+    T_values, p_values = np.meshgrid(T_values, p_values)
+
+    plot_3d(T_values, p_values, z_func)
