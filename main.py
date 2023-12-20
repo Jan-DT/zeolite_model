@@ -11,21 +11,20 @@ from formulas import *
 
 # CONSTANTS
 
-qmax        =       100             #Max amount adsorbed
-k_ads       =       10              #adsorption constant
-k_des       =       10              #desorption constant
-B_a0        =       k_ads/k_des     
-deltaE_ads  =       -50             #Adsorption energy- negative for a exothermic reeaction 
-R           =       8.31446261      #Gas constant
-T           =       623             #Temperature in Kelvin
-
+qmax = 100  # Max amount adsorbed
+k_ads = 10  # adsorption constant
+k_des = 10  # desorption constant
+B_a0 = k_ads / k_des
+deltaE_ads = -50  # Adsorption energy- negative for a exothermic reeaction
+R = 8.31446261  # Gas constant
+T = 623  # Temperature in Kelvin
 
 # PARAMETERS
-T_ADS = np.float32(273.15 + 250)    # Temperature during adsorption in Kelvin
-P_ADS = np.float32(150 * 10 ** 5)   # Pressure during adsorption in Pascal
+T_ADS = np.float32(273.15 + 250)  # Temperature during adsorption in Kelvin
+P_ADS = np.float32(150 * 10 ** 5)  # Pressure during adsorption in Pascal
 
-T_DES = np.float32(273.15 + 250)    # Temperature during desorption in Kelvin
-P_DES = np.float32(1.0 * 10 ** 5)   # Pressure during desorption in Pascal
+T_DES = np.float32(273.15 + 250)  # Temperature during desorption in Kelvin
+P_DES = np.float32(1.0 * 10 ** 5)  # Pressure during desorption in Pascal
 
 
 class Reactor:
@@ -94,12 +93,14 @@ if __name__ == "__main__":
     #
     #     reactor.run(duration=100)
 
-    def plot_3d(x, y, z_func):
+    def plot_3d(T_values, p_values, q_func):
+        T_values, p_values = np.meshgrid(T_values, p_values)
+
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
 
         # Plot the surface
-        ax.plot_surface(x, y, z_func(x,y))
+        ax.plot_surface(T_values, p_values, q_func(T_values, p_values))
 
         ax.set_xlabel("T (K)")
         ax.set_ylabel("p (Pa)")
@@ -108,23 +109,37 @@ if __name__ == "__main__":
         plt.show()
 
 
+    def plot_2d(T_values, p_values, q_func):
+        fig = plt.figure()
+        ax = fig.add_subplot()
+
+        for _T in T_values:
+            plt.plot(p_values, q_func(_T, p_values), label=f"T = {_T} K")
+
+        ax.set_xlabel("p (Pa)")
+        ax.set_ylabel("q (mol/kg)")
+
+        plt.legend()
+
+        plt.show()
+
     # uit paper: https://www.sciencedirect.com/science/article/abs/pii/S138718111400448X
     B_A0 = 3.915 * 10 ** 5  # pa^-1
-    Q_MAX = 3.2 # mol/kg (uit zelfde paper)
+    Q_MAX = 3.2  # mol/kg (uit zelfde paper)
     E_ADS = 1.2 * 10 ** 3  # J/mol (ONGEBASEERD, VOLLEDIG WILLEKEURIG GEKOZEN)
     R = 8.314  # J/mol K
 
+    AMOUNT = 5
 
     # afhankelijk van reactor capaciteit
-    T_values = np.linspace(273.15 + 200, 273.15 + 350, 100)
+    T_values = np.linspace(273.15 + 200, 273.15 + 350, AMOUNT)
     # in paper: https://pubs.acs.org/doi/10.1021/acs.jpcc.6b09224
     # wordt een partial pressure tussen 0 en 2kPa genoemd
-    p_values = np.linspace(100, 2000, 100)
+    p_values = np.linspace(300, 700, 100)
 
-    def z_func(T_ADS, pA):
+
+    def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
         return q_A_langmuir(Q_MAX, _b_A, pA)
 
-    T_values, p_values = np.meshgrid(T_values, p_values)
-
-    plot_3d(T_values, p_values, z_func)
+    plot_2d(T_values, p_values, q_func)
