@@ -5,17 +5,27 @@ The simulation is based on the Langmuir theory.
 """
 from enum import Enum
 from matplotlib import pyplot as plt
+import math
 
 from formulas import *
 
 # CONSTANTS
 
-# PARAMETERS
-T_ADS = np.float32(273.15 + 250)  # Temperature during adsorption in Kelvin
-P_ADS = np.float32(150 * 10 ** 5)  # Pressure during adsorption in Pascal
+qmax        =       100             #Max amount adsorbed
+k_ads       =       10              #adsorption constant
+k_des       =       10              #desorption constant
+B_a0        =       k_ads/k_des     
+deltaE_ads  =       -50             #Adsorption energy- negative for a exothermic reeaction 
+R           =       8.31446261      #Gas constant
+T           =       623             #Temperature in Kelvin
 
-T_DES = np.float32(273.15 + 250)  # Temperature during desorption in Kelvin
-P_DES = np.float32(1.0 * 10 ** 5)  # Pressure during desorption in Pascal
+
+# PARAMETERS
+T_ADS = np.float32(273.15 + 250)    # Temperature during adsorption in Kelvin
+P_ADS = np.float32(150 * 10 ** 5)   # Pressure during adsorption in Pascal
+
+T_DES = np.float32(273.15 + 250)    # Temperature during desorption in Kelvin
+P_DES = np.float32(1.0 * 10 ** 5)   # Pressure during desorption in Pascal
 
 
 class Reactor:
@@ -77,4 +87,4 @@ if __name__ == "__main__":
                           t_des=T_DES,
                           p_des=P_DES)
 
-        reactor.run(duration=100)
+        reactor.run(duration=1)
