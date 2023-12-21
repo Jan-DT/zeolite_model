@@ -96,50 +96,60 @@ if __name__ == "__main__":
     def plot_3d(T_values, p_values, q_func):
         T_values, p_values = np.meshgrid(T_values, p_values)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(projection='3d')
+        ax = fig.add_subplot(1, 2, 1, projection='3d')
 
         # Plot the surface
-        ax.plot_surface(T_values, p_values, q_func(T_values, p_values))
+        ax.plot_surface(T_values, p_values / 10**5, q_func(T_values, p_values))
 
         ax.set_xlabel("T (K)")
-        ax.set_ylabel("p (Pa)")
-        ax.set_zlabel("q_A (mol/kg)")
-
-        plt.show()
+        ax.set_ylabel("p (bar)")
+        ax.set_zlabel("q_A (kg/kg)")
 
 
     def plot_2d(T_values, p_values, q_func):
-        fig = plt.figure()
-        ax = fig.add_subplot()
+        ax = fig.add_subplot(1, 2, 2)
 
         for _T in T_values:
-            plt.plot(p_values, q_func(_T, p_values), label=f"T = {_T} K")
+            plt.plot(p_values / 10**5, q_func(_T, p_values), label=f"T = {_T} K")
 
-        ax.set_xlabel("p (Pa)")
-        ax.set_ylabel("q (mol/kg)")
+        ax.set_xlabel("p (bar)")
+        ax.set_ylabel("q (kg/kg)")
 
         plt.legend()
 
-        plt.show()
+
+    fig = plt.figure(figsize=(16, 9))
+
+    Q_MAX = 1.4  # mol/kg (uit zelfde paper)
+    E_ADS = 54 * 10 ** 3  # J/mol (ONGEBASEERD, VOLLEDIG WILLEKEURIG GEKOZEN)
+    R = 8.314  # J/mol K
+    T0 = 298.15  # K
+    M_CH4 = 16.04 * 10**-3  # kg/mol
+
+    dH0 = 46  # J/mol
+    dS0 = 8.16  # J/mol K
 
     # uit paper: https://www.sciencedirect.com/science/article/abs/pii/S138718111400448X
-    B_A0 = 3.915 * 10 ** 5  # pa^-1
-    Q_MAX = 3.2  # mol/kg (uit zelfde paper)
-    E_ADS = 1.2 * 10 ** 3  # J/mol (ONGEBASEERD, VOLLEDIG WILLEKEURIG GEKOZEN)
-    R = 8.314  # J/mol K
+    # B_A0 = 3.915 * 10 ** 5  # pa^-1
 
-    AMOUNT = 5
+    B_A0 = 100  #b_A0(dH0, dS0, T0, R)
+    print(B_A0)
+
+    AMOUNT = 7
 
     # afhankelijk van reactor capaciteit
-    T_values = np.linspace(273.15 + 200, 273.15 + 350, AMOUNT)
-    # in paper: https://pubs.acs.org/doi/10.1021/acs.jpcc.6b09224
-    # wordt een partial pressure tussen 0 en 2kPa genoemd
-    p_values = np.linspace(300, 700, 100)
+    T_values = np.linspace(273.15 + 200, 273.15 + 350, 7)
+
+    p_values = np.linspace(0.1*10**5, 4.5*10**5, 100)
 
 
     def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
-        return q_A_langmuir(Q_MAX, _b_A, pA)
+        return q_A_langmuir(Q_MAX, _b_A, pA) * M_CH4
 
     plot_2d(T_values, p_values, q_func)
+    plot_3d(T_values, p_values, q_func)
+
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+
+    plt.show()

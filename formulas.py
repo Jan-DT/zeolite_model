@@ -33,6 +33,17 @@ def q_A_langmuir(q_maxA, b_A, p_A):
     return q_maxA * b_A * p_A / (1 + b_A * p_A)
 
 
+def b_A0(dH0, dS0_over_R, T0, R):
+    """
+    Adsorption constant of A at standard conditions
+    :param dH0: enthalpy of adsorption of A at standard conditions
+    :param dS0: entropy of adsorption of A at standard conditions
+    :param T0: temperature at standard conditions
+    :return: adsorption constant of A at standard conditions
+    """
+    return np.exp((dS0_over_R) - dH0 / (R * T0))
+
+
 def b_A_from_k(k_ads, k_des):
     """
     Adsorption constant of A
