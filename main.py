@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
-        return q_A_langmuir(Q_MAX, _b_A, pA) * M_CH4
+        return q_A_langmuir(Q_MAX, _b_A, pA) / Q_MAX
 
     plot_2d(T_values, p_values, q_func)
     plot_3d(T_values, p_values, q_func)
