@@ -7,9 +7,9 @@ Created on Thu Dec 21 00:26:28 2023
 
 
 import numpy as np
-kg_totaal       =       50000      #Kg methaan/jaar
+kg_totaal       =       50000       #Kg methaan/jaar
 H2O_per_zeolite =       0.1         #Kg water die één kg zeoliet per cyclus kan opnemen.
-cyclustijd      =       1          #cyclustijd in uren
+cyclustijd      =       1           #cyclustijd in uren
 n_reactors      =       2           #Aantal reactoren
 
 

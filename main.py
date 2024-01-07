@@ -18,6 +18,10 @@ B_a0 = k_ads / k_des
 deltaE_ads = -50  # Adsorption energy- negative for a exothermic reeaction
 R = 8.31446261  # Gas constant
 T = 623  # Temperature in Kelvin
+M_H2 =   2.015          #Molair mass hydrogen   g/mole
+M_H2O =  18.01528       #Molair mass water      g/mole
+M_CH4 =  16.04          #Molair mass methane    g/mole
+
 
 # PARAMETERS
 T_ADS = np.float32(273.15 + 250)  # Temperature during adsorption in Kelvin
@@ -25,6 +29,12 @@ P_ADS = np.float32(150 * 10 ** 5)  # Pressure during adsorption in Pascal
 
 T_DES = np.float32(273.15 + 250)  # Temperature during desorption in Kelvin
 P_DES = np.float32(1.0 * 10 ** 5)  # Pressure during desorption in Pascal
+
+H2_in  = np.float(1 * 10**-4)    # CO2 feed in kMole/s
+
+
+# preconditions
+Adsorbed_H2O_0 = 0   # Amount of water in reactor at start.
 
 
 class Reactor:
@@ -70,6 +80,14 @@ class Reactor:
         :return:
         """
         print("adsorption step")
+        
+        d_H2O_ads  =  .5 * H2_in * dt * M_H2O   # Calc the amount of water and methane formed
+        d_CH4_out  =  2 * H2_in * dt * M_CH4
+        
+        H2O_ads = H2O_ads + d_H2O_ads           # Calc the amount of water present in the reactor
+        if H2O_ads >=  qmax:
+            _switch_state(self)
+        
 
     def _desorption_step(self, dt: float):
         print("desorption step")
@@ -93,7 +111,7 @@ if __name__ == "__main__":
     #
     #     reactor.run(duration=100)
 
-    def plot_3d(T_values, p_values, q_func):
+    def plot_3d(T_values, p_values, q_A_langmuir):
         T_values, p_values = np.meshgrid(T_values, p_values)
 
         ax = fig.add_subplot(1, 2, 1, projection='3d')
@@ -106,7 +124,7 @@ if __name__ == "__main__":
         ax.set_zlabel("q_A (kg/kg)")
 
 
-    def plot_2d(T_values, p_values, q_func):
+    def plot_2d(T_values, p_values, q_A_langmuir):
         ax = fig.add_subplot(1, 2, 2)
 
         for _T in T_values:
