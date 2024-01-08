@@ -3,9 +3,10 @@ This file contains the main script for the simulation of the adsorption and deso
 of a gas in a porous material. This is used to calculate the production of methane from syn gas in Zeolite 3A.
 The simulation is based on the Langmuir theory.
 """
-from enum import Enum
-from matplotlib import pyplot as plt
 import math
+from enum import Enum
+
+from matplotlib import pyplot as plt
 
 from formulas import *
 
@@ -50,8 +51,8 @@ class Reactor:
                  p_des: np.float32 = P_DES):
         self.state: Reactor.State = Reactor.State.ADSORPTION
         self.time: float = 0.0
-        self.delta_time: float = 0.1
-
+        self.delta_time: float = delta_time
+        
         self.t_ads = t_ads
         self.p_ads = p_ads
         self.t_des = t_des
@@ -139,7 +140,7 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=(16, 9))
 
     Q_MAX = 1.4  # mol/kg (uit zelfde paper)
-    E_ADS = 54 * 10 ** 3  # J/mol (ONGEBASEERD, VOLLEDIG WILLEKEURIG GEKOZEN)
+    E_ADS = 54 * 10 ** 3  # J/mol (schatting)
     R = 8.314  # J/mol K
     T0 = 298.15  # K
     M_CH4 = 16.04 * 10**-3  # kg/mol
@@ -163,7 +164,7 @@ if __name__ == "__main__":
 
     def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
-        return q_A_langmuir(Q_MAX, _b_A, pA) * M_CH4
+        return q_A_langmuir(Q_MAX, _b_A, pA) / Q_MAX
 
     plot_2d(T_values, p_values, q_func)
     plot_3d(T_values, p_values, q_func)
