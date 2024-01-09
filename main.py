@@ -65,12 +65,13 @@ class Reactor:
         :return:
         """
         while self.time < duration:
-            if self.state == Reactor.State.ADSORPTION:
-                self._adsorption_step(self.delta_time)
-            elif self.state == Reactor.State.DESORPTION:
-                self._desorption_step(self.delta_time)
-            else:
-                raise Exception("Invalid state")
+            match self.state:
+                case Reactor.State.ADSORPTION:
+                    self._adsorption_step(self.delta_time)
+                case Reactor.State.DESORPTION:
+                    self._desorption_step(self.delta_time)
+                case _:
+                    raise Exception("Invalid state")
 
             self.time += self.delta_time
 
@@ -160,7 +161,6 @@ if __name__ == "__main__":
     T_values = np.linspace(273.15 + 200, 273.15 + 350, 7)
 
     p_values = np.linspace(0.1*10**5, 4.5*10**5, 100)
-
 
     def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
