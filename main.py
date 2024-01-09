@@ -22,10 +22,10 @@ if __name__ == "__main__":
         ax = fig.add_subplot(1, 3, 1, projection='3d')
 
         # Plot the surface
-        ax.plot_surface(T_values, p_values / 10**5, q_f(T_values, p_values))
+        ax.plot_surface(T_values, p_values / (R*T_values), q_f(T_values, p_values))
 
         ax.set_xlabel("T (K)")
-        ax.set_ylabel("p (bar)")
+        ax.set_ylabel("C (mol/m^3)")
         ax.set_zlabel("q_A (kg/kg)")
 
 
@@ -66,15 +66,15 @@ if __name__ == "__main__":
     # uit paper: https://www.sciencedirect.com/science/article/abs/pii/S138718111400448X
     # B_A0 = 3.915 * 10 ** 5  # pa^-1
 
-    B_A0 = 10e5  #b_A0(dH0, dS0, T0, R)
+    B_A0 = 0.67e5  #b_A0(dH0, dS0, T0, R)
     print(B_A0)
 
     AMOUNT = 7
 
     # afhankelijk van reactor capaciteit
-    T_values = np.linspace(273.15 + 200, 273.15 + 350, 7)
+    T_values = np.linspace(273.15 + 200, 273.15 + 350, AMOUNT)
 
-    p_values = np.linspace(0.1*10**5, 4.5*10**5, 100)
+    p_values = np.linspace(0.1*10**5, 6*10**5, 100)
 
     def q_func(T_ADS, pA):
         _b_A = b_A(B_A0, E_ADS, R, T_ADS)
